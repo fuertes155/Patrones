@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultorio Odontológico Gabo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #bbb 1px solid;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 26px; /* Tamaño de letra aumentado */
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 20px; /* Tamaño de letra aumentado */
+        }
+        .form-group input, .form-group select, .form-group button {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            background: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background: #555;
+        }
+        #resultado, #historial {
+            margin-top: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        #resultado {
+            background: #e2e2e2;
+        }
+        #historial h2 {
+            margin-top: 0;
+            font-size: 22px; /* Tamaño de letra aumentado */
+        }
+        .paciente {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Consultorio Odontológico Gabo</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-group">
+            <label for="tipoProcedimiento">Procedure Type:</label>
+            <select id="tipoProcedimiento">
+                <option value="cleaning">Dental Cleaning</option>
+                <option value="orthodontics">Orthodontics</option>
+                <option value="endodontics">Endodontics (Root Canal Treatment)</option>
+                <option value="extraction">Dental Extraction</option>
+                <option value="implant">Dental Implant</option>
+                <option value="whitening">Dental Whitening</option>
+                <option value="crown">Dental Crown</option>
+                <option value="composite">Composite Resin (Dental Filling)</option>
+                <!-- Removed Bruxism -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="nombrePaciente">Patient Name:</label>
+            <input type="text" id="nombrePaciente" placeholder="Patient Name">
+        </div>
+        <div class="form-group">
+            <label for="diagnostico">Diagnosis:</label>
+            <input type="text" id="diagnostico" placeholder="Diagnosis">
+        </div>
+        <div class="form-group">
+            <button id="registrarProcedimiento">Register Procedure</button>
+        </div>
+
+        <div class="form-group">
+            <label for="nombrePacienteEliminar">Patient Name to Remove:</label>
+            <input type="text" id="nombrePacienteEliminar" placeholder="Patient Name to Remove">
+            <button id="eliminarPaciente">Remove Patient</button>
+        </div>
+
+        <div id="resultado" style="display:none;">
+            <p id="resultadoTexto"></p>
+        </div>
+
+        <div id="historial">
+            <h2>Patient History</h2>
+            <div id="historialPacientes"></div>
+        </div>
+    </div>
+
+    <script>
+        let historialPacientes = [];
+
+        function mostrarHistorial() {
+            const historialDiv = document.getElementById('historialPacientes');
+            historialDiv.innerHTML = '';
+            historialPacientes.forEach(paciente => {
+                const pacienteDiv = document.createElement('div');
+                pacienteDiv.className = 'paciente';
+                pacienteDiv.textContent = paciente;
+                historialDiv.appendChild(pacienteDiv);
+            });
+        }
+
+        document.getElementById('registrarProcedimiento').addEventListener('click', function() {
+            const tipoProcedimiento = document.getElementById('tipoProcedimiento').value;
+            const nombrePaciente = document.getElementById('nombrePaciente').value;
+            const diagnostico = document.getElementById('diagnostico').value;
+
+            if (nombrePaciente === "" || diagnostico === "") {
+                alert("Please enter the patient's name and diagnosis.");
+                return;
+            }
+
+            const tipoProcedimientoTexto = {
+                'cleaning': 'Dental Cleaning',
+                'orthodontics': 'Orthodontics',
+                'endodontics': 'Endodontics (Root Canal Treatment)',
+                'extraction': 'Dental Extraction',
+                'implant': 'Dental Implant',
+                'whitening': 'Dental Whitening',
+                'crown': 'Dental Crown',
+                'composite': 'Composite Resin (Dental Filling)'
+                // Removed Bruxism
+            }[tipoProcedimiento];
+
+            const resultadoTexto = "A " + tipoProcedimientoTexto + " has been registered for patient " + nombrePaciente + ". Diagnosis: " + diagnostico;
+            document.getElementById('resultadoTexto').innerText = resultadoTexto;
+            document.getElementById('resultado').style.display = 'block';
+
+            historialPacientes.push(`Patient: ${nombrePaciente}, Procedure: ${tipoProcedimientoTexto}, Diagnosis: ${diagnostico}`);
+            mostrarHistorial();
+
+            document.getElementById('nombrePaciente').value = '';
+            document.getElementById('diagnostico').value = '';
+        });
+
+        document.getElementById('eliminarPaciente').addEventListener('click', function() {
+            const nombrePacienteEliminar = document.getElementById('nombrePacienteEliminar').value;
+
+            if (nombrePacienteEliminar === "") {
+                alert("Please enter the name of the patient to remove.");
+                return;
+            }
+
+            historialPacientes = historialPacientes.filter(p => !p.includes(`Patient: ${nombrePacienteEliminar}`));
+            mostrarHistorial();
+            document.getElementById('nombrePacienteEliminar').value = '';
+        });
+    </script>
+</body>
+</html>
+
+
+
+
